@@ -13,7 +13,9 @@ pipeline {
 
         stage("Checkout from SCM") {
             steps {
-                git branch: 'master', credentialsId: 'github', url: 'https://github.com/Nouhaila89/gitops-register-app'
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                    git branch: 'master', credentialsId: 'github', url: 'https://${GITHUB_TOKEN}@github.com/Nouhaila89/gitops-register-app'
+                }
             }
         }
 
@@ -35,12 +37,13 @@ pipeline {
                     sh '''
                        git config --global user.name "Nouhaila89"
                        git config --global user.email "fettahinouhaila3@gmail.com"
+                       
                        git add deployment.yaml
-                       git commit -m "Updated Deployment Manifest"
+                       git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
                     '''
-                    withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
                         sh '''
-                           git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Nouhaila89/gitops-register-app master
+                           git push https://${GITHUB_TOKEN}@github.com/Nouhaila89/gitops-register-app master
                         '''
                     }
                 }
