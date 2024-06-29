@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: register-app-service
+  name: register-app-servicee
   labels:
     app: register-app 
 spec:
